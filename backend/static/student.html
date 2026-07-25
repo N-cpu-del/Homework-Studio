@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Homework Studio</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #f5f7fb;
+        }
+
+        h1 {
+            color: #1f3c88;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            background: #1f3c88;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        input {
+            padding: 10px;
+            width: 200px;
+        }
+
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        textarea {
+            width: 90%;
+            height: 100px;
+        }
+
+        .result {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+<h1>Homework Studio</h1>
+
+
+<div class="box">
+
+    <h3>Enter Lesson Code</h3>
+
+    <input 
+        id="lessonCode"
+        placeholder="Example: E004CEA"
+    >
+
+    <button onclick="loadHomework()">
+        Load Homework
+    </button>
+
+</div>
+
+
+<div id="homework"></div>
+
+
+<div class="box">
+
+<button onclick="submitHomework()">
+Submit Homework
+</button>
+
+</div>
+
+
+<div id="result"></div>
+
+
+
+<script>
+
+let homeworkData = null;
+let answers = {};
+
+
+async function loadHomework(){
+
+    let code = document.getElementById(
+        "lessonCode"
+    ).value;
+
+
+    let response = await fetch(
+        `/api/homework/${code}`
+    );
+
+
+    if(!response.ok){
+
+        alert("Homework not found");
+
+        return;
+    }
+
+
+    homeworkData = await response.json();
+
+
+    displayHomework();
+
+}
+
+
+
+function displayHomework(){
+
+    let container =
+    document.getElementById("homework");
+
+
+    container.innerHTML = "";
+
+
+    homeworkData.sections.forEach(
+        section => {
+
+
+        let box =
+        document.createElement("div");
+
+        box.className="box";
+
+
+        box.innerHTML =
+        `<h2>${section.title}</h2>`;
+
+
+        section.questions.forEach(
+            q => {
+
+
+            let div =
+            document.createElement("div");
+
+            div.className="question";
+
+
+            div.innerHTML +=
+            `<p><b>${q.question || ""}</b></p>`;
+
+
+            if(q.options){
+
+
+                for(let key in q.options){
+
+                    div.innerHTML +=
+                    `
+                    <label>
+                    <input 
+                    type="radio"
+                    name="${q.id}"
+                    value="${key}">
+                    ${key}) ${q.options[key]}
+                    </label>
+                    <br>
+                    `;
+
+                }
+
+
+            }
+
+
+            else if(q.passage){
+
+                div.innerHTML =
+                `
+                <p>${q.passage}</p>
+                `;
+
+
+            }
+
+
+            else {
+
+                div.innerHTML +=
+                `
+                <textarea 
+                id="${q.id}"
+                placeholder="Write your answer">
+                </textarea>
+                `;
+
+            }
+
+
+            box.appendChild(div);
+
+
+        });
+
+
+        container.appendChild(box);
+
+
+    });
+
+
+}
+
+
+
+function collectAnswers(){
+
+
+    answers={};
+
+
+    let elements =
+    document.querySelectorAll(
+        "input[type=radio]:checked, textarea"
+    );
+
+
+    elements.forEach(
+        element => {
+
+            answers[element.name || element.id]
+            =
+            element.value;
+
+        }
+    );
+
+}
+
+
+
+async function submitHomework(){
+
+
+    collectAnswers();
+
+
+    let code =
+    document.getElementById(
+        "lessonCode"
+    ).value;
+
+
+
+    let response =
+    await fetch(
+        `/api/homework/submit?lesson_code=${code}`,
+        {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":
+            "application/json"
+        },
+
+        body:
+        JSON.stringify(answers)
+
+        }
+    );
+
+
+    let result =
+    await response.json();
+
+
+
+    document.getElementById(
+        "result"
+    ).innerHTML =
+    `
+    <div class="result">
+
+    <h2>Result</h2>
+
+    <p>
+    Score:
+    ${result.result.score}
+    /
+    ${result.result.total}
+    </p>
+
+    <p>
+    Percentage:
+    ${result.result.percentage}
+    </p>
+
+
+    <h3>Feedback</h3>
+
+    <ul>
+    ${
+    result.result.feedback
+    .map(
+        f=>`<li>${f}</li>`
+    )
+    .join("")
+    }
+    </ul>
+
+
+    </div>
+    `;
+
+
+}
+
+
+</script>
+
+
+</body>
+</html>

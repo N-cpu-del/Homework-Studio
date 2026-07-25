@@ -1,0 +1,761 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #f5f7ff, #eef6ff);
+  color: #24324a;
+}
+
+
+main {
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+
+/* Main worksheet container */
+
+.worksheet {
+  max-width: 1000px;
+  margin: auto;
+}
+
+
+/* Header */
+
+.worksheet-header {
+  background: white;
+  border-radius: 24px;
+  padding: 35px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+
+.lesson-code {
+  display: inline-block;
+  background: #e7f0ff;
+  color: #2563eb;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+.worksheet-header h1 {
+  font-size: 34px;
+  margin: 15px 0;
+}
+
+
+.summary {
+  font-size: 17px;
+  line-height: 1.7;
+  color: #64748b;
+}
+
+
+
+/* Sections */
+
+.worksheet-section {
+
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 30px;
+
+  margin-bottom: 30px;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+
+}
+
+
+.worksheet-section h2 {
+
+  font-size: 26px;
+
+  margin-bottom: 25px;
+
+  color: #1e3a8a;
+
+}
+
+
+
+/* Question cards */
+
+
+.question-card {
+
+  background: #f8fafc;
+
+  border-radius: 18px;
+
+  padding: 25px;
+
+  margin-bottom: 22px;
+
+  border: 1px solid #e2e8f0;
+
+}
+
+
+.question-number {
+
+  display: inline-block;
+
+  background: #2563eb;
+
+  color: white;
+
+  padding: 6px 14px;
+
+  border-radius: 20px;
+
+  font-size: 14px;
+
+  margin-bottom: 15px;
+
+}
+
+
+.question-card h4 {
+
+  font-size: 19px;
+
+  margin-top: 10px;
+
+  margin-bottom: 20px;
+
+  color: #1e293b;
+
+}
+
+
+
+/* Answer boxes */
+
+
+.answer-box {
+
+  width: 100%;
+
+  border-radius: 14px;
+
+  border: 2px solid #dbeafe;
+
+  padding: 14px;
+
+  font-size: 16px;
+
+  resize: vertical;
+
+  background: white;
+
+  margin-top: 12px;
+
+}
+
+
+.answer-box:focus {
+
+  outline: none;
+
+  border-color: #2563eb;
+
+}
+
+
+
+/* Multiple choice */
+
+
+.options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+}
+
+
+.option-card {
+
+  background: white;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  border: 1px solid #dbeafe;
+
+  cursor: pointer;
+
+  display: flex;
+
+  gap: 12px;
+
+  align-items: center;
+
+}
+
+
+.option-card:hover {
+
+  background: #eff6ff;
+
+}
+
+
+
+.option-card input {
+
+  width: 18px;
+
+  height: 18px;
+
+}
+
+
+
+/* Exercises */
+
+
+.exercise-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+
+}
+
+
+.exercise-item {
+
+  background: white;
+
+  padding: 15px;
+
+  border-radius: 14px;
+
+}
+
+
+
+.exercise-item span {
+
+  display: block;
+
+  font-size: 16px;
+
+  margin-bottom: 8px;
+
+}
+
+
+
+/* Reading */
+
+
+.reading-container {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 25px;
+
+}
+
+
+.reading-passage {
+
+  background: #eef6ff;
+
+  padding: 25px;
+
+  border-radius: 18px;
+
+  line-height: 1.8;
+
+  font-size: 17px;
+
+}
+
+
+
+.reading-passage h5,
+
+.reading-questions h5 {
+
+  font-size: 20px;
+
+  margin-top: 0;
+
+}
+
+
+
+/* Criteria */
+
+
+.criteria {
+
+  background: #fff7ed;
+
+  border-radius: 14px;
+
+  padding: 18px;
+
+  margin-top: 20px;
+
+}
+
+
+.criteria h5 {
+
+  margin-top: 0;
+
+}
+
+
+
+.criteria li {
+
+  margin-bottom: 8px;
+
+}
+
+
+
+/* Submit button */
+
+
+.submit-button {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin: 35px auto;
+
+  padding: 16px 35px;
+
+  border: none;
+
+  border-radius: 30px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+  );
+
+  color: white;
+
+  font-size: 18px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow: 0 10px 20px rgba(37,99,235,0.3);
+
+}
+
+
+
+.submit-button:hover {
+
+  transform: translateY(-2px);
+
+}
+
+
+
+/* Mobile */
+
+@media(max-width:700px){
+
+  main{
+    padding:20px 10px;
+  }
+
+
+  .worksheet-header h1{
+    font-size:26px;
+  }
+
+
+  .worksheet-section{
+    padding:20px;
+  }
+
+}
+
+/* Student landing page */
+
+
+.student-home {
+
+  min-height: 80vh;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+}
+
+
+
+.welcome-card {
+
+  background:white;
+
+  max-width:650px;
+
+  width:100%;
+
+  padding:50px;
+
+  border-radius:28px;
+
+  text-align:center;
+
+  box-shadow:0 12px 35px rgba(0,0,0,0.08);
+
+}
+
+
+
+.welcome-icon {
+
+  width:80px;
+
+  height:80px;
+
+  margin:auto;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:#e7f0ff;
+
+  color:#2563eb;
+
+}
+
+
+
+.welcome-card h1 {
+
+  font-size:34px;
+
+  margin:25px 0 15px;
+
+  color:#1e3a8a;
+
+}
+
+
+
+.welcome-text {
+
+  font-size:18px;
+
+  color:#64748b;
+
+  line-height:1.6;
+
+  margin-bottom:35px;
+
+}
+
+
+
+.lesson-form {
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:15px;
+
+  text-align:left;
+
+}
+
+
+
+.lesson-form label {
+
+  font-weight:600;
+
+  color:#334155;
+
+}
+
+
+
+.lesson-form input {
+
+  padding:16px;
+
+  border-radius:14px;
+
+  border:2px solid #dbeafe;
+
+  font-size:18px;
+
+}
+
+
+
+.lesson-form input:focus {
+
+  outline:none;
+
+  border-color:#2563eb;
+
+}
+
+
+
+.error-message {
+
+  margin-top:20px;
+
+  color:#dc2626;
+
+  font-weight:600;
+
+}
+
+/* =========================
+   Homework Feedback
+========================= */
+
+
+.feedback {
+
+  max-width: 1000px;
+
+  margin: 30px auto;
+
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+
+}
+
+
+
+.feedback > h2 {
+
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 24px;
+
+  margin-bottom: 30px;
+
+  text-align: center;
+
+  font-size: 34px;
+
+  color: #1e3a8a;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+
+}
+
+
+
+
+.feedback-block {
+
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 30px;
+
+  margin-bottom: 30px;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+
+}
+
+
+
+.feedback-block h3 {
+
+  font-size: 26px;
+
+  color: #1e3a8a;
+
+  margin-top: 0;
+
+  margin-bottom: 25px;
+
+}
+
+
+
+
+.feedback-block ul {
+
+  list-style: none;
+
+  padding: 0;
+
+  margin: 0;
+
+}
+
+
+
+.feedback-block li {
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 18px;
+
+  padding: 22px;
+
+  margin-bottom: 18px;
+
+  font-size: 16px;
+
+  line-height: 1.7;
+
+}
+
+
+
+.feedback-block li strong {
+
+  color: #1e293b;
+
+  font-size: 18px;
+
+}
+
+
+
+.feedback-block li p {
+
+  margin: 8px 0;
+
+}
+
+
+
+/* Writing feedback cards */
+
+
+.feedback-block h4 {
+
+  font-size: 20px;
+
+  color: #334155;
+
+  margin-top: 25px;
+
+  margin-bottom: 12px;
+
+}
+
+
+
+.feedback-block h4 + ul {
+
+  background: #f8fafc;
+
+  padding: 18px 25px;
+
+  border-radius: 16px;
+
+}
+
+
+
+.feedback-block h4 + ul li {
+
+  background: transparent;
+
+  border: none;
+
+  padding: 6px 0;
+
+  margin: 0;
+
+}
+
+
+
+
+/* Positive feedback */
+
+
+.feedback-block:nth-child(4) li {
+
+  border-left: 5px solid #22c55e;
+
+}
+
+
+
+/* Mobile */
+
+
+@media(max-width:700px){
+
+
+  .feedback {
+
+    padding: 0 10px;
+
+  }
+
+
+  .feedback > h2 {
+
+    font-size: 26px;
+
+    padding: 20px;
+
+  }
+
+
+  .feedback-block {
+
+    padding: 20px;
+
+  }
+
+
+}
