@@ -685,24 +685,24 @@ question.items.map(
           >
 
 
-            <input
-              type="radio"
-              name={`${question.id}_${statement.id}`}
-              value={option}
+<input
+  type="radio"
+  name={question.id}
+  value={option}
 
-              checked={
-                answers[question.id] === option
-              }
+  checked={
+    answers[question.id] === option
+  }
 
 
-              onChange={() =>
-                onAnswer(
-                  question.id,
-                  option
-                )
-              }
+  onChange={() =>
+    onAnswer(
+      question.id,
+      option
+    )
+  }
 
-            />
+/>
 
 
 

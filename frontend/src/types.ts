@@ -17,18 +17,7 @@ export interface Question {
 
   passage?: string;
 
-  questions?: {
-    id?: string;
-    type?: string;
-    question?: string;
-
-    items?: {
-      id: string;
-      question: string;
-      correct_answer?: string;
-    }[];
-
-  }[];
+  readingItems?: any[];
 
   marking_criteria?: string[];
 }
@@ -51,24 +40,43 @@ export interface Worksheet {
 }
 
 
-export interface CorrectAnswer {
-  question: string;
-  answer: string;
+
+export interface FeedbackItem {
+
+  id: string;
+
+  correct: boolean;
+
+  student_answer?: string;
+
+  correct_answer?: string;
+
 }
 
 
-export interface WrongAnswer {
-  question: string;
+
+export interface WritingFeedback {
+
   student_answer: string;
-  correct_answer: string;
-  explanation: string;
+
+  feedback?: {
+
+    strengths?: string[];
+
+    areas_to_improve?: string[];
+
+    teacher_comment?: string;
+
+  };
+
 }
+
 
 
 export interface MarkingResult {
-  correct_answers: CorrectAnswer[];
 
-  wrong_answers: WrongAnswer[];
+  results: FeedbackItem[];
 
-  suggestions: string[];
+  writing_feedback?: WritingFeedback[];
+
 }
