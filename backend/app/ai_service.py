@@ -1363,6 +1363,9 @@ Return the homework as JSON only.
                     ] = answer
 
 
+                answer_lookup[question_id] = correct
+
+
             elif isinstance(correct, list):
 
                 for index, answer in enumerate(correct, start=1):
@@ -1392,8 +1395,14 @@ Return the homework as JSON only.
                 ]:
 
                     open_questions[question["id"]] = {
-                        "question": question.get("question"),
-                        "answer": question.get("correct_answer", "")
+                        "question": question.get(
+                            "question",
+                            ""
+                        ),
+                        "marking_criteria": question.get(
+                            "marking_criteria",
+                            []
+                        )
                     }
 
 
@@ -1401,9 +1410,8 @@ Return the homework as JSON only.
         for question_id, student_answer in student_answers.items():
 
 
-            # AI marking for writing tasks
+            # AI marking for writing and challenge tasks
             if question_id in open_questions:
-
 
                 feedback = self.check_open_question(
                     open_questions[question_id],
@@ -1417,11 +1425,12 @@ Return the homework as JSON only.
                     "feedback": feedback
                 })
 
+
                 continue
 
 
 
-            # Automatic marking for normal questions
+            # Automatic marking
             if question_id not in answer_lookup:
                 continue
 
@@ -1429,21 +1438,54 @@ Return the homework as JSON only.
             correct_answer = answer_lookup[question_id]
 
 
-            is_correct = (
-                str(student_answer).strip().lower()
-                ==
-                str(correct_answer).strip().lower()
-            )
+            # Vocabulary and Reading dictionary answers
+            if (
+                isinstance(student_answer, dict)
+                and isinstance(correct_answer, dict)
+            ):
+
+                item_results = {}
 
 
-            results.append({
-                "id": question_id,
-                "correct": is_correct,
-                "student_answer": student_answer,
-                "correct_answer": correct_answer
-            }) 
+                for number, answer in correct_answer.items():
 
-            
+                    student_value = student_answer.get(
+                        number,
+                        ""
+                    )
+
+
+                    item_results[number] = (
+                        str(student_value).strip().lower()
+                        ==
+                        str(answer).strip().lower()
+                    )
+
+
+                results.append({
+                    "id": question_id,
+                    "correct": all(item_results.values()),
+                    "student_answer": student_answer,
+                    "correct_answer": correct_answer,
+                    "details": item_results
+                })
+
+
+            else:
+
+                is_correct = (
+                    str(student_answer).strip().lower()
+                    ==
+                    str(correct_answer).strip().lower()
+                )
+
+
+                results.append({
+                    "id": question_id,
+                    "correct": is_correct,
+                    "student_answer": student_answer,
+                    "correct_answer": correct_answer
+                })
 
 
 
@@ -1454,7 +1496,7 @@ Return the homework as JSON only.
 
 
 
-    def check_writing(
+    def check_open_question(
         self,
         task: dict,
         student_answer: str,
@@ -1464,11 +1506,9 @@ Return the homework as JSON only.
         instructions = """
 You are an experienced English teacher marking student writing.
 
-Evaluate the student's writing using the provided criteria.
+Evaluate the student's answer using the task requirements.
 
-Give supportive but honest feedback.
-
-Always include at least one strength, even if the writing needs improvement.
+Give supportive and useful feedback.
 
 Do not give a score.
 
@@ -1476,26 +1516,26 @@ Return JSON only:
 
 {
  "strengths": [
-   "At least one positive point about the student's writing"
+   "Positive points about the student's answer"
  ],
  "areas_to_improve": [
    "Specific improvements"
  ],
- "teacher_comment": "A short encouraging teacher comment"
+ "teacher_comment": "Short encouraging teacher comment"
 }
 """
 
 
         prompt = f"""
 
-Writing task:
+Task:
 
-{task["question"]}
+{task.get("question", "")}
 
 
 Marking criteria:
 
-{json.dumps(task["criteria"], indent=2)}
+{json.dumps(task.get("marking_criteria", []), indent=2)}
 
 
 Student answer:
@@ -1503,15 +1543,14 @@ Student answer:
 {student_answer}
 
 
-Analyse the writing.
+Evaluate:
 
-Focus on:
-
+- task completion
 - grammar accuracy
-- vocabulary
-- organisation
-- task achievement
+- vocabulary use
 - clarity
+- organisation
+
 
 Return JSON only.
 
@@ -1523,92 +1562,16 @@ Return JSON only.
             prompt
         )
 
-    def check_open_question(
+
+
+    def check_writing(
         self,
         task: dict,
         student_answer: str,
     ) -> dict:
 
 
-        instructions = """
-You are an experienced English teacher marking reading comprehension answers.
-
-Your job is to check whether the student's answer shows the correct understanding of the reading text.
-
-IMPORTANT:
-
-Reading questions are OPEN-ENDED.
-
-Do NOT require the exact wording of the model answer.
-
-Accept answers that:
-
-- have the same meaning
-- use different words
-- use different pronouns
-- use shorter answers
-- paraphrase the idea correctly
-
-Do NOT mark an answer wrong only because the wording is different.
-
-Example:
-
-Model answer:
-"They fell and twisted their ankle."
-
-Student answer:
-"He twisted his ankle."
-
-Result:
-Correct.
-
-Example:
-
-Model answer:
-"She was nervous because it was her first competition."
-
-Student answer:
-"She felt worried because it was her first time."
-
-Result:
-Correct.
-
-Only mark incorrect when the student's answer changes the meaning or gives information that is not supported by the text.
-
-Return JSON only:
-
-{
-"correct": true,
-"comment": "Short teacher comment"
-}
-"""
-
-
-        prompt = f"""
-
-Reading question:
-
-{task["question"]}
-
-
-Expected answer:
-
-{task.get("answer","")}
-
-
-Student answer:
-
-{student_answer}
-
-
-Decide if the student's answer has the same meaning.
-
-Return JSON only.
-
-"""
-
-
-        return self._json_request(
-            instructions,
-            prompt
+        return self.check_open_question(
+            task,
+            student_answer
         )

@@ -45,5 +45,10 @@ class Settings(BaseSettings):
 
 
 @lru_cache
-def get_settings() -> Settings:
-    return Settings()
+def get_settings():
+
+    settings = Settings()
+
+    print("KEY LOADED:", settings.openai_api_key[:10])
+
+    return settings
