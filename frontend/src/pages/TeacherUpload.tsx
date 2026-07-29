@@ -1,39 +1,57 @@
 import { useState } from "react";
+import { saveLesson } from "../api";
 
 export function TeacherUpload() {
-
   const [lessonCode, setLessonCode] = useState("");
-
   const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
 
-
-  function handleUpload() {
+  async function handleUpload() {
 
     if (!lessonCode.trim()) {
-
       alert("Please enter a lesson code.");
-
       return;
-
     }
 
 
     if (!file) {
-
       alert("Please choose a PDF file.");
-
       return;
-
     }
 
 
-    console.log("Lesson code:", lessonCode);
+    try {
 
-    console.log("File:", file);
+      setUploading(true);
 
 
-    alert("Ready to upload!");
+      const result = await saveLesson(
+        lessonCode,
+        file
+      );
+
+
+      alert(
+        `Lesson uploaded successfully: ${result.lesson_code}`
+      );
+
+
+      setLessonCode("");
+      setFile(null);
+
+
+    } catch (error:any) {
+
+      alert(
+        error.message || "Upload failed."
+      );
+
+    } finally {
+
+      setUploading(false);
+
+    }
 
   }
 
@@ -46,19 +64,16 @@ export function TeacherUpload() {
 
       <section className="worksheet-header">
 
-
         <h1>
           Teacher Upload
         </h1>
 
 
         <p className="summary">
-          Upload a lesson PDF and generate homework.
+          Upload a lesson PDF. Students can use the lesson code to generate homework.
         </p>
 
-
       </section>
-
 
 
 
@@ -66,30 +81,21 @@ export function TeacherUpload() {
       <section className="worksheet-section">
 
 
-
         <div className="exercise-item">
-
 
           <label>
             Lesson code
           </label>
 
 
-
           <input
-
             className="answer-box"
-
             value={lessonCode}
-
             onChange={(e) =>
               setLessonCode(e.target.value)
             }
-
-            placeholder="Example: G8-U5-S3"
-
+            placeholder="Example: ARS_B1_05"
           />
-
 
         </div>
 
@@ -99,27 +105,20 @@ export function TeacherUpload() {
 
         <div className="exercise-item">
 
-
           <label>
             Upload lesson PDF
           </label>
 
 
-
           <input
-
             type="file"
-
             accept="application/pdf"
-
             onChange={(e) =>
               setFile(
                 e.target.files?.[0] ?? null
               )
             }
-
           />
-
 
         </div>
 
@@ -133,9 +132,16 @@ export function TeacherUpload() {
 
           onClick={handleUpload}
 
+          disabled={uploading}
+
         >
 
-          Generate Homework
+          {
+            uploading
+            ? "Uploading..."
+            : "Upload Lesson"
+          }
+
 
         </button>
 
@@ -143,7 +149,6 @@ export function TeacherUpload() {
 
 
       </section>
-
 
 
     </main>
