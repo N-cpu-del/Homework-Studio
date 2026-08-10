@@ -6,3 +6,4 @@ pydantic-settings==2.10.1
 PyMuPDF==1.26.3
 openai==1.97.0
 pydantic<2.12
+sqlalchemy-libsql==0.2.0

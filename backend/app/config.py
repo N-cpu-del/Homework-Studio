@@ -13,7 +13,10 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "sqlite:///./data/app.db"
 
-
+    # Turso
+    turso_database_url: str = ""
+    turso_auth_token: str = ""
+    
     # Frontend access
     cors_origins: str = (
         "http://localhost:5173,"
