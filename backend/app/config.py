@@ -52,6 +52,4 @@ def get_settings():
 
     settings = Settings()
 
-    print("KEY LOADED:", settings.openai_api_key[:10])
-
     return settings

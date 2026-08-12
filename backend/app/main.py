@@ -138,10 +138,24 @@ def generate_homework(
             existing_homework.content
         )
 
-        if "lesson_code" not in homework_data:
-            homework_data["lesson_code"] = lesson.code
-
-        return homework_data
+        homework_data["lesson_code"] = lesson.code
+        # Upgrade old persisted worksheets once so rendering and grading read the
+        # same canonical data.  Regeneration is only needed if an old record has
+        # already lost its dialogue, statements, or answers.
+        normalized = ai_service._normalize_homework(homework_data)
+        try:
+            ai_service._validate_homework_contract(normalized)
+        except AiServiceError:
+            # The old record lost required display content.  Never serve an
+            # options-only worksheet; replace it with a newly generated one.
+            session.delete(existing_homework)
+            session.commit()
+        else:
+            if normalized != homework_data:
+                existing_homework.content = json.dumps(normalized)
+                session.add(existing_homework)
+                session.commit()
+            return normalized
 
 
 
@@ -219,9 +233,14 @@ def get_homework(
         )
 
 
-    return json.loads(
-        homework.content
-    )
+    homework_data = json.loads(homework.content)
+    homework_data["lesson_code"] = lesson_code
+    normalized = ai_service._normalize_homework(homework_data)
+    if normalized != homework_data:
+        homework.content = json.dumps(normalized)
+        session.add(homework)
+        session.commit()
+    return normalized
 
 
 
@@ -231,6 +250,10 @@ def submit_homework(
     answers: dict,
     session: Session = Depends(get_session)
 ):
+
+    submitted_answers = answers.get("answers") if isinstance(answers.get("answers"), dict) else answers
+    if not isinstance(submitted_answers, dict):
+        raise HTTPException(status_code=422, detail="answers must be an object.")
 
     homework = session.query(Homework).filter(
         Homework.lesson_code == lesson_code
@@ -253,7 +276,7 @@ def submit_homework(
 
         result = ai_service.mark_homework(
             homework_json,
-            answers
+            submitted_answers
         )
 
 
@@ -272,7 +295,7 @@ def submit_homework(
 
     submission = HomeworkSubmission(
         lesson_code=lesson_code,
-        student_answers=json.dumps(answers),
+        student_answers=json.dumps(submitted_answers),
         score=0,
         feedback=json.dumps(result)
     )

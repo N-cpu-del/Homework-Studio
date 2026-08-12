@@ -87,7 +87,7 @@ export async function markHomework(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(answers),
+    body: JSON.stringify({ answers }),
   });
 
   const data = await parseResponse<any>(response);
