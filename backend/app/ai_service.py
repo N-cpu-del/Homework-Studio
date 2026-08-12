@@ -1069,8 +1069,32 @@ Return JSON only.
                 section["questions"].append(question)
             sections.append(section)
 
+        # The model occasionally over-generates.  The student contract is five
+        # grammar dialogues and five reading statements, so cap those sections
+        # deterministically before rebuilding their model answers.
+        for section in sections:
+            if str(section.get("title", "")).lower() not in {"grammar", "reading"}:
+                continue
+            remaining = 5
+            retained_questions = []
+            for question in section.get("questions", []):
+                items = question.get("items", []) if isinstance(question, dict) else []
+                if not isinstance(items, list) or remaining <= 0:
+                    continue
+                question["items"] = items[:remaining]
+                remaining -= len(question["items"])
+                if question["items"]:
+                    retained_questions.append(question)
+            section["questions"] = retained_questions
+
+        # Answer-key entries must reflect the capped worksheet exactly.
+        visible_ids = {
+            item["id"] for section in sections for question in section.get("questions", [])
+            if isinstance(question, dict) for item in question.get("items", [])
+            if isinstance(item, dict) and _text(item.get("correct_answer"))
+        }
         canonical["sections"] = sections
-        canonical["answer_key"] = answer_key
+        canonical["answer_key"] = [entry for entry in answer_key if entry["id"] in visible_ids]
         return canonical
 
     # ============================================================
